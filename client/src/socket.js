@@ -5,6 +5,7 @@ import {
   removeOfflineUser,
   addOnlineUser,
 } from "./store/conversations";
+import { clearUnreadConversation } from "./store/utils/thunkCreators";
 
 const socket = io(window.location.origin);
 
@@ -19,7 +20,11 @@ socket.on("connect", () => {
     store.dispatch(removeOfflineUser(id));
   });
   socket.on("new-message", (data) => {
-    store.dispatch(setNewMessage(data.message, data.sender));
+    store.dispatch(setNewMessage(data.message, data.sender, false));
+    const state = store.getState();
+    if (state.activeConversation.id === data.message.senderId) {
+      store.dispatch(clearUnreadConversation(data.message.conversationId));
+    }
   });
 });
 
