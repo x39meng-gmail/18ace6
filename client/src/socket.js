@@ -4,6 +4,7 @@ import {
   setNewMessage,
   removeOfflineUser,
   addOnlineUser,
+  receiveOtherHasRead,
 } from "./store/conversations";
 import { clearUnreadConversation } from "./store/utils/thunkCreators";
 
@@ -25,6 +26,9 @@ socket.on("connect", () => {
     if (state.activeConversation.id === data.message.senderId) {
       store.dispatch(clearUnreadConversation(data.message.conversationId));
     }
+  });
+  socket.on("notify-read", (conversationId) => {
+    store.dispatch(receiveOtherHasRead(conversationId));
   });
 });
 
