@@ -101,12 +101,16 @@ export const clearUnreadConvoFromStore = (state, conversationId) => {
 export const receiveOtherHasReadToStore = (state, conversationId) => {
   return state.map(convo => {
     if (convo.id === conversationId) {
-      const convoCopy = { ...convo }
-      convoCopy.messages = [...convo.messages]
+      const convoCopy = { ...convo };
+      convoCopy.messages = [...convo.messages];
       const lastReadByOtherMessage = convo.messages
         .reverse()
-        .find(message => message.senderId !== convo.otherUser.id)
-      convoCopy.lastReadByOtherMessageId = lastReadByOtherMessage.id
+        .find(message => message.senderId !== convo.otherUser.id);
+      if (lastReadByOtherMessage) {
+        convoCopy.lastReadByOtherMessageId = lastReadByOtherMessage.id;
+      } else {
+        convoCopy.lastReadByOtherMessageId = null;
+      }
       return convoCopy
     } else {
       return convo
