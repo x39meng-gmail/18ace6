@@ -5,6 +5,7 @@ import {
   removeOfflineUserFromStore,
   addMessageToStore,
   clearUnreadConvoFromStore,
+  receiveOtherHasReadToStore,
 } from "./utils/reducerFunctions";
 
 // ACTIONS
@@ -16,7 +17,8 @@ const REMOVE_OFFLINE_USER = "REMOVE_OFFLINE_USER";
 const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
 const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
-const CLEAR_UNREAD_CONVERSATION = "CLEAR_READ_CONVERSATION";
+const CLEAR_UNREAD_CONVERSATION = "CLEAR_UNREAD_CONVERSATION";
+const RECEIVE_OTHER_HAS_READ = "RECEIVE_OTHER_HAS_READ";
 
 // ACTION CREATORS
 
@@ -76,6 +78,13 @@ export const setClearUnreadConversation = (conversationId) => {
   }
 }
 
+export const receiveOtherHasRead = (conversationId) => {
+  return {
+    type: RECEIVE_OTHER_HAS_READ,
+    conversationId,
+  };
+};
+
 // REDUCER
 
 const reducer = (state = [], action) => {
@@ -102,6 +111,8 @@ const reducer = (state = [], action) => {
       );
     case CLEAR_UNREAD_CONVERSATION:
       return clearUnreadConvoFromStore(state, action.conversationId);
+    case RECEIVE_OTHER_HAS_READ:
+      return receiveOtherHasReadToStore(state, action.conversationId)
     default:
       return state;
   }

@@ -41,7 +41,10 @@ const Chat = (props) => {
         online={otherUser.online}
         sidebar={true}
       />
-      <ChatContent conversation={conversation} />
+      <ChatContent
+        conversation={conversation}
+        isBold={conversation.unreadCount > 0}
+      />
       <Badge
         className={classes.unreadCount}
         color="primary"

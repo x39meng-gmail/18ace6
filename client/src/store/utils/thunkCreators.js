@@ -124,7 +124,8 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
 
 export const clearUnreadConversation = (conversationId) => async (dispatch) => {
   try {
-    await axios.post("/api/conversations/read", { conversationId });
+    await axios.patch("/api/conversations/read", { conversationId });
+    socket.emit("notify-read", conversationId);
     dispatch(setClearUnreadConversation(conversationId));
   } catch (error) {
     console.error(error);

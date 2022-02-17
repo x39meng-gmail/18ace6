@@ -76,6 +76,17 @@ router.get("/", async (req, res, next) => {
           conversationId: convoJSON.id,
         },
       });
+      const lastReadByOtherMessage = await Message.findOne({
+        where: {
+          read: true,
+          senderId: userId,
+          conversationId: convoJSON.id,
+        },
+        order: [["createdAt", "DESC"]],
+        attributes: ["id"],
+      });
+      convoJSON.lastReadByOtherMessageId =
+        lastReadByOtherMessage === null ? null : lastReadByOtherMessage.id;
       conversations[i] = convoJSON;
     }
 
@@ -85,13 +96,25 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.post("/read", async (req, res, next) => {
+router.patch("/read", async (req, res, next) => {
   try {
     if (!req.user) {
       return res.sendStatus(401);
     }
     const userId = req.user.id;
     const { conversationId } = req.body;
+    const matchingConvo = await Conversation.findOne({
+      where: {
+        id: conversationId,
+        [Op.or]: [
+          { user1Id: userId },
+          { user2Id: userId },
+        ]
+      }
+    });
+    if (matchingConvo === null) {
+      return res.sendStatus(403);
+    }
     await Message.update(
       { read: true },
       {
@@ -101,7 +124,7 @@ router.post("/read", async (req, res, next) => {
         },
       }
     );
-    res.send();
+    res.sendStatus(204);
   } catch (error) {
     next(error);
   }
